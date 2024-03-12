@@ -28,15 +28,20 @@ const products = productsFromServer.map((product) => {
   return newProductObject;
 });
 
-function getPreparedProducts(productsArray, { isActiveTabs }) {
-  const preparedProducts = [...productsArray];
-
-  // console.log(
-  //
-  // );
+function getPreparedProducts(productsArray, { isActiveTabs }, query) {
+  let preparedProducts = [...productsArray];
+  const SEARCH_QUARY = query;
 
   if (isActiveTabs !== 'All') {
-    return preparedProducts.filter(user => user.ownerId.name === isActiveTabs);
+    preparedProducts = preparedProducts.filter(
+      user => user.ownerId.name === isActiveTabs,
+    );
+  }
+
+  if (query) {
+    preparedProducts = preparedProducts.filter(
+      items => items.name.toLowerCase().includes(SEARCH_QUARY.toLowerCase()),
+    );
   }
 
   return preparedProducts;
@@ -44,8 +49,17 @@ function getPreparedProducts(productsArray, { isActiveTabs }) {
 
 export const App = () => {
   const [isActiveTabs, setIsActiveTabs] = useState('All');
+  const [query, setQuery] = useState('');
 
-  const visibleProducts = getPreparedProducts(products, { isActiveTabs });
+  const handleResetInput = () => {
+    setQuery('');
+  };
+
+  const visibleProducts = getPreparedProducts(
+    products,
+    { isActiveTabs },
+    query,
+  );
 
   return (
     <div className="section">
@@ -80,11 +94,14 @@ export const App = () => {
             <div className="panel-block">
               <p className="control has-icons-left has-icons-right">
                 <input
+                  value={query}
                   data-cy="SearchField"
                   type="text"
                   className="input"
                   placeholder="Search"
-                  value="qwe"
+                  onChange={(event) => {
+                    setQuery(event.currentTarget.value);
+                  }}
                 />
 
                 <span className="icon is-left">
@@ -92,12 +109,14 @@ export const App = () => {
                 </span>
 
                 <span className="icon is-right">
-                  {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-                  <button
-                    data-cy="ClearButton"
-                    type="button"
-                    className="delete"
-                  />
+                  {query !== '' && (
+                    <button
+                      data-cy="ClearButton"
+                      type="button"
+                      className="delete"
+                      onClick={() => handleResetInput()}
+                    />
+                  )}
                 </span>
               </p>
             </div>
@@ -229,7 +248,6 @@ export const App = () => {
               </tbody>
             </table>
           )}
-
         </div>
       </div>
     </div>
