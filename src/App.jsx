@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/accessible-emoji */
 import React, { useState } from 'react';
 import './App.scss';
-// import cn from 'classnames';
+import cn from 'classnames';
 
 import usersFromServer from './api/users';
 import categoriesFromServer from './api/categories';
@@ -49,6 +49,7 @@ function getPreparedProducts(productsArray, { isActiveTabs }, query) {
 
 export const App = () => {
   const [isActiveTabs, setIsActiveTabs] = useState('All');
+  const [isActiveBoards, setIsActiveBoards] = useState('All');
   const [query, setQuery] = useState('');
 
   const handleResetInput = () => {
@@ -125,33 +126,23 @@ export const App = () => {
               <a
                 href="#/"
                 data-cy="AllCategories"
-                className="button is-success mr-6 is-outlined"
+                className="button is-success mr-6 is-info"
               >
                 All
               </a>
-
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1 is-info"
-                href="#/"
-              >
-                Category 1
-              </a>
-
-              <a data-cy="Category" className="button mr-2 my-1" href="#/">
-                Category 2
-              </a>
-
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1 is-info"
-                href="#/"
-              >
-                Category 3
-              </a>
-              <a data-cy="Category" className="button mr-2 my-1" href="#/">
-                Category 4
-              </a>
+              {/* is-outlined is-info */}
+              {categoriesFromServer.map(categorie => (
+                <a
+                  data-cy="Category"
+                  className={cn('button mr-2 my-1', {
+                    'is-info': isActiveBoards === categorie.title,
+                  })}
+                  href="#/"
+                  onClick={() => setIsActiveBoards(categorie.title)}
+                >
+                  {categorie.title}
+                </a>
+              ))}
             </div>
 
             <div className="panel-block">
